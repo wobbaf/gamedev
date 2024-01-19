@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.IOException;
 
-import static org.example.Board.TILE_SIZE;
+import static org.example.Board.*;
 
 public class Tile {
 
@@ -21,6 +21,54 @@ public class Tile {
     private Boolean hasPlayer = false;
 
     private Boolean isVisible = false;
+
+    public Boolean getVisited() {
+        return visited;
+    }
+
+    public void setVisited(Boolean visited) {
+        this.visited = visited;
+    }
+
+    private Boolean visited = false;
+
+    public Boolean getHasLeftWall() {
+        return hasLeftWall;
+    }
+
+    public void setHasLeftWall(Boolean hasLeftWall) {
+        this.hasLeftWall = hasLeftWall;
+    }
+
+    public Boolean getHasRightWall() {
+        return hasRightWall;
+    }
+
+    public void setHasRightWall(Boolean hasRightWall) {
+        this.hasRightWall = hasRightWall;
+    }
+
+    public Boolean getHasCeiling() {
+        return hasCeiling;
+    }
+
+    public void setHasCeiling(Boolean hasCeiling) {
+        this.hasCeiling = hasCeiling;
+    }
+
+    private Boolean hasLeftWall = false;
+    private Boolean hasRightWall = false;
+    private Boolean hasCeiling = false;
+
+    public Boolean getHasFloor() {
+        return hasFloor;
+    }
+
+    public void setHasFloor(Boolean hasFloor) {
+        this.hasFloor = hasFloor;
+    }
+
+    private Boolean hasFloor = false;
 
     public Boolean getHasObstacle() {
         return hasObstacle;
@@ -85,6 +133,17 @@ public class Tile {
                     TILE_SIZE
             );
             g.setColor(new Color(214, 214, 214));
+            if(visited){
+                g.setColor(new Color(165,207,227));
+            }
+
+            if(pos.x == 0 && pos.y == 0){
+                g.setColor(new Color(171,202,101));
+            }
+
+            if(pos.x == COLUMNS-1 && pos.y == ROWS-1){
+                g.setColor(new Color(234,153,153));
+            }
             g.fillRect(
                     (pos.x - offset.x) * TILE_SIZE + 2,
                     (pos.y - offset.y) * TILE_SIZE + 2,
@@ -92,14 +151,57 @@ public class Tile {
                     TILE_SIZE - 2
             );
 
+            if(hasLeftWall){
+                g.setColor(Color.black);
+                g.fillRect(
+                        (pos.x - offset.x) * TILE_SIZE,
+                        (pos.y - offset.y) * TILE_SIZE,
+                        3,
+                        TILE_SIZE
+                );
+            }
+
+
+            if(hasFloor){
+                g.setColor(Color.black);
+                g.fillRect(
+                        (pos.x - offset.x) * TILE_SIZE,
+                        (pos.y - offset.y) * TILE_SIZE + (TILE_SIZE-3),
+                        TILE_SIZE,
+                        3
+                );
+            }
+
+
+            if(hasRightWall){
+                g.setColor(Color.black);
+                g.fillRect(
+                        (pos.x - offset.x) * TILE_SIZE + (TILE_SIZE-3),
+                        (pos.y - offset.y) * TILE_SIZE,
+                        3,
+                        TILE_SIZE
+                );
+            }
+
+
+            if(hasCeiling){
+                g.setColor(Color.black);
+                g.fillRect(
+                        (pos.x - offset.x) * TILE_SIZE,
+                        (pos.y - offset.y) * TILE_SIZE,
+                        TILE_SIZE,
+                        3
+                );
+            }
+
             if(hasCoin){
                 loadImage("images/coin.png");
                 g.drawImage(
                         image,
-                        (pos.x - offset.x) * Board.TILE_SIZE + 2,
-                        (pos.y - offset.y) * Board.TILE_SIZE + 2,
-                        TILE_SIZE - 2,
-                        TILE_SIZE - 2,
+                        (pos.x - offset.x) * Board.TILE_SIZE + 10,
+                        (pos.y - offset.y) * Board.TILE_SIZE + 10,
+                        TILE_SIZE - 20,
+                        TILE_SIZE - 20,
                         observer
                 );
             }

@@ -1,15 +1,14 @@
 package org.example;
 
-import javax.sound.sampled.*;
+import org.example.maze.Kruskal;
+import org.example.maze.Maze;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Random;
 
 class Board extends JPanel implements ActionListener, KeyListener {
@@ -24,6 +23,11 @@ class Board extends JPanel implements ActionListener, KeyListener {
     public static final int VISIBLE_COLUMNS = 18;
     // controls how many coins appear on the board
     public static final int NUM_COINS = 25;
+
+    public static final int N = 1;
+    public static final int S = 2;
+    public static final int E = 4;
+    public static final int W = 8;
     // suppress serialization warning
     private static final long serialVersionUID = 490905409104883233L;
     boolean isPlaybackCompleted;
@@ -39,6 +43,9 @@ class Board extends JPanel implements ActionListener, KeyListener {
     private Util util = new Util();
     private int coinCount = 0;
     public static Tile[][] tiles = new Tile[COLUMNS][ROWS];
+
+    public Maze maze = new Kruskal(COLUMNS, ROWS, 12);
+    private final int[][] mazeGrid = maze.getGrid();
 
     public Board() {
         // set the game board size
@@ -86,7 +93,7 @@ class Board extends JPanel implements ActionListener, KeyListener {
 
         for (Tile[] tileRow : tiles) {
             for (Tile tile : tileRow) {
-                if (isTileInPlayerRadius(player.getPos().x, player.getPos().y, tile.getPos().x, tile.getPos().y, 12)) {
+                if (isTileInPlayerRadius(player.getPos().x, player.getPos().y, tile.getPos().x, tile.getPos().y, 24)) {
                     tile.setVisible(true);
                 } else {
                     tile.setVisible(false);
@@ -206,12 +213,38 @@ class Board extends JPanel implements ActionListener, KeyListener {
                     tiles[x][y].setHasCoin(true);
                     coinCount++;
                 }
+            }
+        }
 
-                if (randInt > 20 && randInt < 25) {
-                    tiles[x][y].setHasObstacle(true);
+        for (int j = 0; j < ROWS; ++j) {
+            for (int i = 0; i < COLUMNS; ++i) {
+                // render "bottom" using the "S" switch
+                if ((mazeGrid[j][i] & Maze.S) == 0) {
+                    tiles[i][j].setHasFloor(true);
+                    if (j + 1 < ROWS) {
+                        tiles[i][j + 1].setHasCeiling(true);
+                    }
+                }
+
+                // render "side" using "E" switch
+                if (i < (COLUMNS - 1) && (mazeGrid[j][i] & Maze.E) != 0) {
+                    if (((mazeGrid[j][i] | mazeGrid[j][i + 1]) & Maze.S) == 0) {
+                        if (j + 1 < ROWS) {
+                            tiles[i + 1][j + 1].setHasCeiling(true);
+                        }
+                        tiles[i + 1][j].setHasFloor(true);
+                    }
+                    ;
+                } else {
+                    if (i < (COLUMNS - 1)) {
+                        tiles[i + 1][j].setHasLeftWall(true);
+                        tiles[i][j].setHasRightWall(true);
+                    }
                 }
             }
         }
+
+        tiles[0][0].setVisited(true);
     }
 
     private void collectCoins() {

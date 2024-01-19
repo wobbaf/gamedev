@@ -14,6 +14,7 @@ class Player {
     // current position of the player on the board grid
     private Point pos;
 
+    private boolean ghostMode = true;
     private Util util = new Util();
     // keep track of the player's score
     private int score;
@@ -63,15 +64,27 @@ class Player {
         Point tempPoint = (Point) pos.clone();
 
         if (key == KeyEvent.VK_UP) {
+            if(!ghostMode && Board.tiles[pos.x][pos.y-1].getHasFloor()){
+                return;
+            }
             tempPoint.translate(0, -1);
         }
         if (key == KeyEvent.VK_RIGHT) {
+            if(!ghostMode && Board.tiles[pos.x][pos.y].getHasLeftWall()){
+                return;
+            }
             tempPoint.translate(1, 0);
         }
         if (key == KeyEvent.VK_DOWN) {
+            if(!ghostMode && Board.tiles[pos.x][pos.y].getHasFloor()){
+                return;
+            }
             tempPoint.translate(0, 1);
         }
         if (key == KeyEvent.VK_LEFT) {
+            if(!ghostMode && Board.tiles[pos.x-1][pos.y].getHasLeftWall()){
+                return;
+            }
             tempPoint.translate(-1, 0);
         }
 
@@ -80,6 +93,8 @@ class Player {
         } else {
             util.playSound("sounds/doh.wav");
         }
+
+        Board.tiles[pos.x][pos.y].setVisited(true);
     }
 
     public void tick() {
