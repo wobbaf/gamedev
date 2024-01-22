@@ -46,10 +46,10 @@ class Player {
         // position by multiplying by the tile size.
         g.drawImage(
                 image,
-                (pos.x - offset.x) * Board.TILE_SIZE + 2,
-                (pos.y - offset.y) * Board.TILE_SIZE + 2,
-                x - 2,
-                y - 2,
+                (pos.x - offset.x) * Board.TILE_SIZE + 10,
+                (pos.y - offset.y) * Board.TILE_SIZE + 10,
+                x - 20,
+                y - 20,
                 observer
         );
     }
